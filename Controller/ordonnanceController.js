@@ -4,6 +4,7 @@ const RDV = require("../Model/RDV");
 // Contrôleur pour créer une ordonnance
 exports.createOrdonnance = async (req, res) => {
   try {
+    console.log("data", req.body)
     const { idPatient, idRdv, medicaments } = req.body;
 
     const ordonnancefound = await Ordonnance.find({ rdv: idRdv });
@@ -24,11 +25,15 @@ exports.createOrdonnance = async (req, res) => {
         const soir = parseFloat(medicamentObj.soir) || 0;
 
         const totalTreatment = Math.ceil(
-          ((matin + midi + apres_midi + soir) * 90) / 30
-        );
+          (matin + midi + apres_midi + soir) * 90) 
+        ;
 
         const medicament = new Medicament({
           nom: medicamentObj.nom,
+          matin:medicamentObj.matin,
+          soir:medicamentObj.soir,
+          apres_midi:medicamentObj.apres_midi,
+          midi :medicamentObj.midi,
           stock: totalTreatment,
           ordonnance: ordonnance._id,
         });
@@ -43,7 +48,8 @@ exports.createOrdonnance = async (req, res) => {
         { status: "Termine" },
         { new: true }
       );
-      return res.status(201).json(ordonnance);
+      console.log ( "ordonnance", ordonnance)
+      return res.status(201).json({ ordonnance: ordonnance });
    
     } else {
       return res

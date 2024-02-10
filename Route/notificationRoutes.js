@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const notificationController = require('../Controller/notificationController');
 
@@ -8,5 +9,5 @@ router.get('/notifications', notificationController.getAllNotifications);
 router.get('/notifications/:id', notificationController.getNotificationById);
 router.put('/notifications/:id', notificationController.updateNotification);
 router.delete('/notifications/:id', notificationController.deleteNotification);
-
+router.post('/sendConfirmationEmail',notificationController.sendEmail);
 module.exports = router;

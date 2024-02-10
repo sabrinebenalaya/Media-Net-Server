@@ -17,6 +17,8 @@ const storage = multer.diskStorage({
   }
 })
 const upload = multer({ storage: storage })
+
+
 // Définir les routes CRUD pour le modèle Patient
 
 router.post('/patients', upload.single("image"), patientController.createPatient);

@@ -25,7 +25,7 @@ const notificationSchema = new mongoose.Schema({
     ref: 'RDV',
     required: true
   },
-  // Autres attributs que vous pourriez avoir...
+  
 });
 
 const Notification = mongoose.model('Notification', notificationSchema);

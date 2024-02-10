@@ -6,6 +6,22 @@ const medicamentSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  matin: {
+    type: Number,
+    required: false
+  },
+  midi: {
+    type: Number,
+    required: false
+  },
+  apres_midi: {
+    type: Number,
+    required: false
+  },
+  soir: {
+    type: Number,
+    required: false
+  },
   stock: {
     type: Number,
     required: false

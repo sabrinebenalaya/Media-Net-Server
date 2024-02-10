@@ -5,7 +5,8 @@ const medicamentController = require('../Controller/medicamentController');
 // Définir les routes CRUD pour le modèle Medicament
 router.post('/medicaments', medicamentController.createMedicament);
 router.get('/medicaments', medicamentController.getAllMedicaments);
-router.get('/medicaments/:id', medicamentController.getMedicamentById);
+router.get('/medicaments/:id', medicamentController.getAllMedicamentsPrescritsToPatient);
+router.get('/medicament/:id', medicamentController.getMedicamentById);
 router.put('/medicaments/:id', medicamentController.updateMedicament);
 router.delete('/medicaments/:id', medicamentController.deleteMedicament);
 
