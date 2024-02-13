@@ -4,7 +4,7 @@ const RDV = require("../Model/RDV");
 const Patient = require("../Model/Patient");
 const Medicament = require("../Model/Medicament");
 const Ordonance = require('../Model/Ordonnance')
-
+const moment = require('moment');
 // stock des medicaments
 async function notificationStockMedicament() {
   try {
@@ -41,10 +41,38 @@ async function notificationStockMedicament() {
   }
 }
 
+
+// modifier le status du rdv chaque semaine (90j)
+async function statusRDV() {
+  try {
+    // Obtenez la date actuelle
+    const dateActuelle = moment();
+
+    // Obtenez tous les rendez-vous terminés
+    const rdvsTermines = await RDV.find({ status: 'terminer' }); // Modifier selon votre modèle de données
+
+    // Parcourez tous les rendez-vous terminés
+    rdvsTermines.forEach(async (rdv) => {
+      // Calculez la différence en jours entre la date actuelle et la date du rendez-vous
+      const differenceJours = dateActuelle.diff(moment(rdv.date), 'days');
+
+      // Vérifiez si la différence est supérieure à 90 jours
+      if (differenceJours > 90) {
+        // Mettez à jour le statut du rendez-vous à 'passer'
+        rdv.status = 'passer';
+        await rdv.save();
+      }
+    });
+  } catch (error) {
+    console.error("Erreur lors de la planification de la tâche :", error);
+  }
+}
+
 // Planifier la tâche pour s'exécuter tous les jours à 8h du matin
-const scheduleHebdo = cron.schedule("0 8 * * 1", async () => {
+const scheduleHebdo = cron.schedule("0 8-20 * * *", async () => {
   try {
     notificationStockMedicament();
+    statusRDV()
   } catch (error) {
     console.error("Erreur lors de la planification de la tâche :", error);
   }

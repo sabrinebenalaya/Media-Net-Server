@@ -2,7 +2,7 @@ const cron = require("node-cron");
 const notification = require("../Controller/notificationController"); // Importez votre fonction d'envoi de notification par e-mail
 const RDV = require("../Model/RDV");
 const Patient = require("../Model/Patient");
-
+const moment = require('moment');
 
 //formatDate
 function formatDate(dateObj){
@@ -29,13 +29,8 @@ return   {formattedDate, formattedTime}
 
 //gerer les notfication des rdv
 async function notificationRDV() {
-  // Récupérer tous les rendez-vous programmés pour les prochaines 72 heures
-  const rdvs = await RDV.find({
-    date: {
-      $gte: new Date(),
-      $lte: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-    },
-  });
+
+  const rdvs = await RDV.find({ status: 'avant72' });
 
   // Parcourir les rendez-vous et envoyer les notifications appropriées
   await Promise.all(rdvs.map(async (rdv) => {
@@ -105,13 +100,45 @@ async function notificationMedicament() {
   }
 }
 
+// MAJ status RDV
+async function statusRDV() {
+  try {
+  
+      // Obtenez l'heure actuelle
+  const heureActuelle = moment();
+
+  // Obtenez tous les rendez-vous
+  const rdvs = await RDV.find({ status: 'attente' } );
+
+  // Parcourez tous les rendez-vous
+  rdvs.forEach(async (rdv) => {
+    // Convertissez la date du rendez-vous en objet moment
+    const dateRDV = moment(rdv.date);
+
+    // Calculez la différence en heures entre l'heure actuelle et l'heure du rendez-vous
+    const differenceJours = dateActuelle.diff(moment(rdv.date), 'days');
+
+   if (differenceJours > 2) {
+      // Rendez-vous dans les 48 heures, mettez à jour le statut à 'avant48'
+      await RDV.findByIdAndUpdate(rdv._id, { status: 'avant48' });
+    } else if (differenceJours > 3) {
+      // Rendez-vous dans les 72 heures, mettez à jour le statut à 'avant72'
+      await RDV.findByIdAndUpdate(rdv._id, { status: 'avant72' });
+    }
+  });
+     
+  } catch (error) {
+    console.error("Erreur lors de la planification de la tâche :", error);
+  }
+}
 
 
 // Planifier la tâche pour s'exécuter tous les jours à 8h du matin
-const schedulejournaliere = cron.schedule("0 8 * * *", async () => {
+const schedulejournaliere = cron.schedule("0 20 * * *", async () => {
   try {
     notificationRDV()
 notificationMedicament()
+statusRDV()
   } catch (error) {
     console.error("Erreur lors de la planification de la tâche :", error);
   }

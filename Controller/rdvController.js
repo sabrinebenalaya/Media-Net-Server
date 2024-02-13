@@ -1,7 +1,6 @@
 const RDV = require("../Model/RDV");
 
 exports.createRDV = async (req, res) => {
-  console.log("existingRdv", req.body.date);
   try {
     const existingRdv = await RDV.findOne({
       patient: req.body.patient,
@@ -49,7 +48,16 @@ exports.getListRDVs = async (req, res) => {
         ],
       });
     } else {
-      rdvs = await RDV.find({ patient: id, status: "passer" });
+
+      rdvs = await RDV.find({
+        patient: id,
+        $or: [
+          { status: "passer" },
+          { status: "Termine" },
+        ],
+      });
+
+   
     }
 
     res.status(200).json(rdvs);
