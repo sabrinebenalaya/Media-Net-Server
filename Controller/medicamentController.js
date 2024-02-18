@@ -1,16 +1,7 @@
 const Medicament = require('../Model/Medicament');
 const Ordonnance = require('../Model/Ordonnance');
 const Rdv = require('../Model/RDV');
-// Contrôleur pour créer un médicament
-exports.createMedicament = async (req, res) => {
-  try {
-    const medicament = new Medicament(req.body);
-    await medicament.save();
-    res.status(201).json(medicament);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+
 
 // Contrôleur pour récupérer tous les médicaments
 exports.getAllMedicaments = async (req, res) => {

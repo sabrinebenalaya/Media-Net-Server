@@ -23,7 +23,7 @@ async function notificationStockMedicament() {
       medicament.stock = nouveauStock;
 
       // Sauvegarder le médicament avec le nouveau stock
-      await medicament.save();
+     // await medicament.save();
 
       // Vérifier si le stock est critique et envoyer une notification si nécessaire
       if (nouveauStock <= 30) {

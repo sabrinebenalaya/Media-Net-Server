@@ -1,10 +1,13 @@
 const Ordonnance = require("../Model/Ordonnance");
 const Medicament = require("../Model/Medicament");
 const RDV = require("../Model/RDV");
+const notificationController = require('./../Controller/notificationController');
+const Patient = require("../Model/Patient");
+const moment = require('moment');
 // Contrôleur pour créer une ordonnance
 exports.createOrdonnance = async (req, res) => {
   try {
-    console.log("data", req.body)
+  
     const { idPatient, idRdv, medicaments } = req.body;
 
     const ordonnancefound = await Ordonnance.find({ rdv: idRdv });
@@ -28,6 +31,8 @@ exports.createOrdonnance = async (req, res) => {
           (matin + midi + apres_midi + soir) * 90) 
         ;
 
+
+
         const medicament = new Medicament({
           nom: medicamentObj.nom,
           matin:medicamentObj.matin,
@@ -39,16 +44,43 @@ exports.createOrdonnance = async (req, res) => {
         });
 
         await medicament.save();
-
-
+   
       }
+      
 
-    await RDV.findByIdAndUpdate(
+   const rdv = await RDV.findByIdAndUpdate(
         idRdv,
         { status: "Termine" },
         { new: true }
       );
-      console.log ( "ordonnance", ordonnance)
+      const patient = await Patient.findById(ordonnance.patient)
+      const listeMedicaments = medicaments.map(medicament => medicament.nom).join(', ');
+      const formattedDate = moment(rdv.date).format("YYYY-MM-DD");
+   
+      const message =`Cher(e) ${patient.prenom},
+
+      Nous vous confirmons que votre ordonnance a bien été ajoutée à votre dossier médical. 
+      Veuillez trouver ci-dessous les détails de l'ordonnance :
+ 
+      Nom du médecin : ${rdv.title}
+      Date de prescription :${formattedDate}
+      Médicaments prescrits : ${listeMedicaments}
+ 
+      Si vous avez des questions concernant votre ordonnance ou si vous avez besoin de plus d'informations, n'hésitez pas à nous contacter.
+ 
+      Notre équipe est là pour vous aider.
+ 
+      Merci de votre confiance.
+ 
+     Cordialement,
+     L'équipe MediaNet`
+      await notificationController.sendEmail(
+        patient.mailPatient,
+        message,
+       "Confirmation d'ajout d'ordonnance"
+      );
+     
+
       return res.status(201).json({ ordonnance: ordonnance });
    
     } else {

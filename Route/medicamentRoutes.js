@@ -3,7 +3,6 @@ const router = express.Router();
 const medicamentController = require('../Controller/medicamentController');
 
 // Définir les routes CRUD pour le modèle Medicament
-router.post('/medicaments', medicamentController.createMedicament);
 router.get('/medicaments', medicamentController.getAllMedicaments);
 router.get('/medicaments/:id', medicamentController.getAllMedicamentsPrescritsToPatient);
 router.get('/medicament/:id', medicamentController.getMedicamentById);

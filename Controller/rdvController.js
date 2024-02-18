@@ -1,5 +1,5 @@
 const RDV = require("../Model/RDV");
-
+const moment = require('moment');
 exports.createRDV = async (req, res) => {
   try {
     const existingRdv = await RDV.findOne({
@@ -12,6 +12,8 @@ exports.createRDV = async (req, res) => {
         .status(400)
         .json("Un rendez-vous existe déjà pour ce patient à cette date.");
     } else {
+   
+      
       const rdv = new RDV(req.body);
       await rdv.save();
       return res.status(201).json(rdv);
@@ -114,10 +116,11 @@ exports.deleteRDV = async (req, res) => {
     const rdv = await RDV.findByIdAndDelete(req.params.id);
     if (!rdv) {
       return res.status(404).json({ message: "RDV not found" });
-    }
+    }else{
 
-    const rdvs = await RDV.find();
-    res.status(200).json(rdvs);
+      const rdvs = await RDV.find();
+      res.status(200).json(rdvs);
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

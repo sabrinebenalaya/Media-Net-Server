@@ -11,6 +11,8 @@ const notificationRoutes = require('./Route/notificationRoutes');
 const schedulejournaliere = require("./Schedules/scheduleTask")
 const scheduleHebdo = require('./Schedules/scheduleTaskHebdomadaire')
 const scheduleTaskHeure = require('./Schedules/scheduleTaskHeure')
+
+
 dotenv.config();
 const port = process.env.PORT;
 
@@ -41,6 +43,6 @@ app.use('/MedicaNet', ordonnanceRoutes);
 app.use('/MedicaNet', notificationRoutes);
 
 
-scheduleHebdo.start()
+//scheduleHebdo.start()
 schedulejournaliere.start();
 scheduleTaskHeure.start()
