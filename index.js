@@ -9,7 +9,6 @@ const medicamentRoutes = require('./Route/medicamentRoutes');
 const ordonnanceRoutes = require('./Route/ordonnanceRoutes');
 const notificationRoutes = require('./Route/notificationRoutes');
 const schedulejournaliere = require("./Schedules/scheduleTask")
-const scheduleHebdo = require('./Schedules/scheduleTaskHebdomadaire')
 const scheduleTaskHeure = require('./Schedules/scheduleTaskHeure')
 
 
@@ -43,6 +42,5 @@ app.use('/MedicaNet', ordonnanceRoutes);
 app.use('/MedicaNet', notificationRoutes);
 
 
-//scheduleHebdo.start()
 schedulejournaliere.start();
 scheduleTaskHeure.start()

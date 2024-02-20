@@ -58,7 +58,7 @@ async function statusRDV_avant24_72() {
   }
 }
 // Planifier la tâche pour s'exécuter tous les jours à 8h du matin
-const schedulejournaliere = cron.schedule("0 8 * * *", async () => {
+const schedulejournaliere = cron.schedule("51 7 * * *", async () => {
   try {
     statusRDV_avant24_72();
   } catch (error) {

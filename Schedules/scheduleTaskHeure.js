@@ -3,20 +3,20 @@ const notification = require('../Controller/notificationController');
 const RDV = require('../Model/RDV');
 const Patient = require('../Model/Patient');
 const moment = require('moment');
-
+const client = require('twilio')(process.env.ACCOUNTSID, process.env.AUTHTOKENN);
 //changer statut et envoyer mail quant le rdv est fait pour informer le patient qu il peut MAJ son ordonnace
 async function statusRDVFait() {
   try {
     const heureActuelle = moment();
     const rdvs = await RDV.find({ status: 'avant24' });
-  console.log("rdv",rdvs)
+
     for (const rdv of rdvs) {
       const dateRDV = moment(rdv.date);
 
       const differenceHeures = dateRDV.diff(heureActuelle, 'hours');
      
       if (differenceHeures <= 1 && differenceHeures >= -1) {
-        console.log("differenceHeures", differenceHeures)
+      
         await RDV.findByIdAndUpdate(rdv._id, { status: 'fait' });
 
         const formattedDate = moment(dateRDV).format("YYYY-MM-DD");
@@ -43,6 +43,30 @@ async function statusRDVFait() {
           message,
          " Rendez-vous réussi - Mettez à jour votre ordonnance"
         );
+
+        const patientPhoneNumber = "+216" + patient.numeroTelephone;
+        const formattedHeure = moment(dateRDV).format('HH:mm');
+const SMS = `Cher ${patient.prenom},
+
+Nous vous rappelons que vous avez un rendez-vous médical important demain à ${formattedHeure} chez ${rdv.title}.
+
+Date du rendez-vous : ${formattedDate}
+Heure du rendez-vous :${formattedHeure}
+
+Si vous avez des questions ou si vous devez annuler ou reporter votre rendez-vous, veuillez contacter notre équipe dès que possible au [Numéro de téléphone].
+
+Nous avons hâte de vous voir demain et de vous offrir les meilleurs soins possibles.
+
+Cordialement,
+L'équipe médicale`
+        client.messages
+          .create({
+            body: SMS,
+            from: '+16812532331',
+            to: patientPhoneNumber
+          })
+          .then(message => console.log(message.sid))
+          .catch(error => console.error('Erreur lors de l\'envoi du SMS:', error));
       }
     }
   } catch (error) {
@@ -53,7 +77,7 @@ async function statusRDVFait() {
 
 
 // Planifier la tâche pour s'exécuter toutes les heures entre 8h et 20h de chaque jour
-const scheduleTaskHeure = cron.schedule("0 8-20 * * *", async () => {
+const scheduleTaskHeure = cron.schedule("55 8-20 * * *", async () => {
     try {
       statusRDVFait();
     } catch (error) {
